@@ -11,7 +11,6 @@ const Container = styled.div`
     justify-content: space-between;
     height: 100px;
     padding: 0 10px;
-    background-color: lightgray;
 `;
 
 const Wrapper = styled.div`

@@ -11,7 +11,7 @@ const Container = styled.div`
     height: calc(100vh - 4em);
     margin: 2em auto;
     background-color: white;
-    border: 1px solid red;
+    border-radius: 15px;
 `;
 
 function App() {
