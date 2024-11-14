@@ -18,7 +18,7 @@ const Container = styled.div`
 function App() {
     return (
         <Container>
-            <BrowserRouter>
+            <BrowserRouter basename={process.env.PUBLIC_URL}>
                 <Routes>
                     <Route path='/' element={<ReadToDo />}></Route>
                     <Route path='/add' element={<AMToDo />}></Route>
