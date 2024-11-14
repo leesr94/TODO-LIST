@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import { useRecoilState } from "recoil";
+import { v4 as uuid4 } from "uuid";
 import { toDoState } from "../state/toDoState";
 import AppBar from "../components/AppBar";
 import ListItem from "../components/ListItem";
@@ -11,7 +12,9 @@ import { FaPlus, FaTrashAlt } from "react-icons/fa";
 
 const Ul = styled.ul`
     margin: 0;
-    padding: 0;
+    padding: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 100px - 40px);
 `;
 
 const BtnWrapper = styled.div`
@@ -36,7 +39,7 @@ const StyledLink = styled(Link)`
     text-decoration: none;
     text-align: center;
     font-size: small;
-    color: black;
+    color: ${({ isCompleted }) => (isCompleted ? "gray" : "#383838")};
 
     &:hover {
         color: lightgray;
@@ -48,8 +51,8 @@ function ReadToDo() {
     const [sortToDoList, setSortToDoList] = useState([]);   // 정렬된 toDoList
     const navigate = useNavigate();
 
-    const goToAdd = () => navigate("/add");
-    const goToDel = () => navigate("/del");
+    const handleGoToAdd = () => navigate("/add");
+    const handleGoToDel = () => navigate("/del");
 
     // 정렬 (미완료-완료, 최신순)
     const sortToDo = (list) => {
@@ -67,7 +70,7 @@ function ReadToDo() {
     }, [toDoList]);
 
     // 완료상태 변경
-    const onChangeCheckbox = (id) => {
+    const handleCompleted = (id) => {
         const upToDo = sortToDoList.map(item => item.id === id ? {
             ...item,
             completed: !item.completed,
@@ -83,8 +86,8 @@ function ReadToDo() {
                 isBack={false}
                 addBtn={
                     <BtnWrapper>
-                        <IconButton onClick={goToAdd}><FaPlus size={25} /></IconButton>
-                        <IconButton onClick={goToDel}><FaTrashAlt size={25} /></IconButton>
+                        <IconButton onClick={handleGoToAdd}><FaPlus size={25} /></IconButton>
+                        <IconButton onClick={handleGoToDel}><FaTrashAlt size={25} /></IconButton>
                     </BtnWrapper>
                 }
             />
@@ -92,16 +95,14 @@ function ReadToDo() {
             <Ul>
                 {sortToDoList.map((item) => (
                     <ListItem
-                        key={item.id}
-                        id={item.id}
-                        toDo={item.toDo}
-                        memo={item.memo}
-                        crtnDt={item.crtnDt}
-                        completed={item.completed}
+                        key={uuid4()}
+                        item={item}
                         checked={false}
-                        mode={"read"}
-                        onFunc={{comp:onChangeCheckbox,}}
-                        etcEle={<StyledLink to={`/modify/${item.id}`}>수정</StyledLink>}
+                        mode="read"
+                        handleCompleted={handleCompleted}
+                        etcEle={<StyledLink to={`/modify/${item.id}`} isCompleted={item.completed}>
+                                    수정
+                                </StyledLink>}
                     />
                 ))}
             </Ul>

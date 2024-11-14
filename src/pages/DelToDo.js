@@ -2,17 +2,18 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useRecoilState } from "recoil";
-
+import { v4 as uuid4 } from "uuid";
 import { toDoState } from "../state/toDoState";
 import AppBar from "../components/AppBar";
 import ListItem from "../components/ListItem";
 
 import styled from "styled-components";
-import { FaCheck } from "react-icons/fa";
 
 const Ul = styled.ul`
     margin: 0;
-    padding: 0;
+    padding: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 100px - 40px - 130px);
 `;
 
 const IsDone = styled.span`
@@ -42,23 +43,25 @@ function DelToDo() {
     }, [toDoList]);
 
     // 선택된 데이터의 id 저장
-    const onChangeCheckbox = (id) => {
-        setSelectedIds((pre) => 
-            pre.includes(id) ? pre.filter((selectIds) => selectIds !== id)
-            : [...pre, id]
+    const handleChangeCheckbox = (id) => {
+        setSelectedIds((prev) => 
+            prev.includes(id) ? prev.filter((selectIds) => selectIds !== id)
+            : [...prev, id]
         );
     };
 
-    const onClick = () => {
+    // 삭제 버튼
+    const handleDelete = () => {
         if (selectIds.length === 0) {
             return alert("삭제할 할 일을 선택하세요.");
         }
 
-        const delToDo = toDoList.filter((item) => !selectIds.includes(item.id));
-        setToDoList(delToDo); // 선택된 항목 제거
-        setSelectedIds([]);   // 선택된 값 초기화
-
-        navigate("/");        // 삭제 후 메인으로 이동
+        if (window.confirm("삭제하시겠습니까?")) {
+            const delToDo = toDoList.filter((item) => !selectIds.includes(item.id));
+            setToDoList(delToDo); // 선택된 항목 제거
+    
+            navigate("/");        // 삭제 후 메인으로 이동
+        }
     };
 
     return (
@@ -66,28 +69,24 @@ function DelToDo() {
             <AppBar
                 title={"삭제하기"}
                 isBack={true}
-                btnTxt={<FaCheck size={25} />}
-                setFun={onClick}
             />
 
             <Ul>
                 {sortToDoList.map((item) => (
                     <ListItem
-                        key={item.id}
-                        id={item.id}
-                        toDo={item.toDo}
-                        memo={item.memo}
-                        crtnDt={item.crtnDt}
-                        completed={item.completed}
+                        key={uuid4()}
+                        item={item}
                         checked={selectIds.includes(item.id)}
-                        mode={"delete"}
-                        onFunc={{chk: onChangeCheckbox,}}
+                        mode="delete"
+                        handleChangeCheckbox={handleChangeCheckbox}
                         etcEle={<IsDone completed={item.completed}>
                                     {item.completed ? "완료" : "미완료"}
                                 </IsDone>}
                     />
                 ))}
             </Ul>
+
+            <button type="button" className="btn btn-del" onClick={handleDelete}>삭제</button>
         </>
     );
 }

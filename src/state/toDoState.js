@@ -8,6 +8,7 @@ export const toDoState = atom({
             toDo: "할 일", 
             memo: "테스트", 
             crtnDt: new Date(), 
+            upDt: new Date(), 
             completed: true,
         },
         { 
@@ -15,6 +16,7 @@ export const toDoState = atom({
             toDo: "할 일2", 
             memo: "테스트2", 
             crtnDt: new Date(), 
+            upDt: new Date(), 
             completed: false,
         },
     ],

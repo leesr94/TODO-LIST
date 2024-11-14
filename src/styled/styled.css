@@ -64,9 +64,32 @@
 * {
     box-sizing: border-box;
     font-family: 'Pretendard';
+	color: #212121;
 }
 
 body {
     margin: 0;
     padding: 0;
+}
+
+.btn {
+	display: block;
+	margin: 40px auto;
+	border: none;
+	width: 100px;
+	height: 50px;
+	border-radius: 15px;
+	font-size: 16px;
+	letter-spacing: 5px;
+	text-align: center;
+	color: #ffffff;
+	cursor: pointer;
+}
+
+.btn-save {
+	background-color: #809dd2;
+}
+
+.btn-del {
+	background-color: #e88e98;
 }

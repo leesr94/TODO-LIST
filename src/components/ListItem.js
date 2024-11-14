@@ -9,7 +9,8 @@ const Item = styled.li`
     margin-top: 20px;
     padding: 10px;
     border-radius: 15px;
-    border: 1px solid lightgray;
+    border: 2px solid ${({ mode, isChecked }) => (mode === "delete" && isChecked ? "#e88e98" : "lightgray")};
+    background-color: ${({ isCompleted }) => (isCompleted ? "#f7f7f7" : "#fff")};
     
     div {
         display: flex;
@@ -48,8 +49,10 @@ const Item = styled.li`
                 position: relative;
                 cursor: pointer;
             }
+            
             .checkbox-label input:checked + .checkbox-icon::before{
-                background: url(https://intranet.adef.co.kr/asset/images/ic_check.png) #000000
+                background: url(https://intranet.adef.co.kr/asset/images/ic_check.png) 
+                    ${({ mode }) => (mode === "read" ? "#383838" : "#e88e98")}
                     no-repeat center;
                 border:none;
             }
@@ -62,8 +65,8 @@ const Item = styled.li`
                 text-overflow: ellipsis;
                 font-size: 1.35em;
                 font-weight: 500;
-                text-decoration: ${({ completed }) => (completed && "line-through")};
-                color: ${({ completed }) => (completed && "gray")};
+                text-decoration: ${({ isCompleted }) => (isCompleted ? "line-through" : "none")};
+                color: ${({ isCompleted }) => (isCompleted ? "gray" : "#212121")};
             }
         }
 
@@ -73,7 +76,13 @@ const Item = styled.li`
     }
 
     div.todo-memo {
+        width: 75%;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         margin: 10px 0 10px 35px;
+        color: ${({ isCompleted }) => (isCompleted ? "gray" : "#383838")};
     }
     
     div.todo-date {
@@ -83,32 +92,8 @@ const Item = styled.li`
     }
 `;
 
-const AddModify = styled.div`
-    width: 100%;
-    margin: 0;
-
-    div {
-        margin: 10px;
-
-        h2 {
-            font-size: 1.35em;
-            font-weight: 500;
-        }
-
-        input[type='text'] {
-            width: 100%;
-            height: 50px;
-            padding: 0 9px;
-        }
-    }
-
-    div:nth-child(1) {
-        margin-bottom: 50px;
-    }
-`;
-
-function ListItem({ id, toDo, memo, crtnDt, completed, onFunc, etcEle, mode, checked }) {
-    const format = new Date(crtnDt).toLocaleString('ko-KR', {
+function ListItem({ item, etcEle, mode, checked, handleCompleted, handleChangeCheckbox }) {
+    const format = new Date(item.crtnDt).toLocaleString('ko-KR', {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
@@ -117,53 +102,30 @@ function ListItem({ id, toDo, memo, crtnDt, completed, onFunc, etcEle, mode, che
         hour12: false,
     });
 
+    const handleOnChange = (id) => {
+        if (mode === "read") handleCompleted(id);
+        else handleChangeCheckbox(id);
+    }
+
     return (
-        <>
-            {mode !== "edit" && (
-                <Item key={id} completed={completed}>
-                    <div className="title-box">
-                        <div className="title-input">
-                            <label className="checkbox-label">
-                                <input 
-                                    type="checkbox" 
-                                    checked={mode === "read" ? completed : checked}
-                                    onChange={mode === "read" ? () => onFunc.comp(id) : () => onFunc.chk(id)}
-                                />
-                                <span className="checkbox-icon" />
-                            </label>
-                            <div className="todo-title">{toDo}</div>
-                        </div>
-                        <div className="todo-modify">{etcEle}</div>
-                    </div>
-                    <div className="todo-memo">{memo}</div>
-                    <div className="todo-date">{format}</div>
-                </Item>
-            )}
-
-            {mode === "edit" && (
-                <AddModify>
-                    <div className="edit-todo-title">
-                        <h2>할 일</h2>
+        <Item isCompleted={item.completed} mode={mode} isChecked={checked}>
+            <div className="title-box">
+                <div className="title-input">
+                    <label className="checkbox-label">
                         <input 
-                            type="text" 
-                            placeholder="할 일을 입력해주세요." 
-                            value={toDo}
-                            onChange={onFunc.todo}
-                            />
-                    </div>
-
-                    <div className="edit-todo-memo">
-                        <h2>메모</h2>
-                        <input 
-                            type="text" 
-                            placeholder="메모를 입력해주세요." 
-                            value={memo}
-                            onChange={onFunc.memo}
+                            type="checkbox" 
+                            checked={mode === "read" ? item.completed : checked}
+                            onChange={() => handleOnChange(item.id)}
                         />
-                    </div>
-                </AddModify>
-            )}
-        </>
+                        <span className="checkbox-icon" />
+                    </label>
+                    <div className="todo-title">{item.toDo}</div>
+                </div>
+                <div className="todo-modify">{etcEle}</div>
+            </div>
+            <div className="todo-memo">{item.memo}</div>
+            <div className="todo-date">{format}</div>
+        </Item>
     );
 }
 
