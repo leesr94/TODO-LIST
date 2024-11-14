@@ -29,6 +29,7 @@ const IconButton = styled.button`
     background-color: transparent;
     border: none;
     column-gap: 10px;
+    margin-right: 5px;
     cursor: pointer;
 `;
 
