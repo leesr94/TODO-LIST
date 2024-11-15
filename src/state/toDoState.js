@@ -1,25 +1,15 @@
 import { atom, selector } from "recoil";
+import { recoilPersist } from "recoil-persist";
+
+const { persistAtom } = recoilPersist ({
+    key: "localStorage", 
+    storage: localStorage,
+});
 
 export const toDoState = atom({
     key: "toDoState",
-    default: [
-        { 
-            id: 1, 
-            toDo: "할 일", 
-            memo: "테스트", 
-            crtnDt: new Date(), 
-            upDt: new Date(), 
-            completed: true,
-        },
-        { 
-            id: 2, 
-            toDo: "할 일2", 
-            memo: "테스트2", 
-            crtnDt: new Date(), 
-            upDt: new Date(), 
-            completed: false,
-        },
-    ],
+    default: [],
+    effects_UNSTABLE: [persistAtom],
 });
 
 export const nextIdState = selector({

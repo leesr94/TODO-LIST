@@ -4,24 +4,20 @@ import { useNavigate, Link } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { v4 as uuid4 } from "uuid";
 import { toDoState } from "../state/toDoState";
+
 import AppBar from "../components/AppBar";
 import ListItem from "../components/ListItem";
+import Filtering from "../components/Filtering";
 
 import styled from "styled-components";
 import { FaPlus, FaTrashAlt } from "react-icons/fa";
 
-const Ul = styled.ul`
-    margin: 0;
-    padding: 20px;
-    overflow-y: auto;
-    height: calc(100vh - 100px - 40px);
-`;
+
 
 const BtnWrapper = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    column-gap: 10px;
 `;
 
 const IconButton = styled.button`
@@ -40,34 +36,32 @@ const StyledLink = styled(Link)`
     text-decoration: none;
     text-align: center;
     font-size: small;
-    color: ${({ isCompleted }) => (isCompleted ? "gray" : "#383838")};
+    color: ${({ $isCompleted }) => ($isCompleted ? "gray" : "#383838")};
 
     &:hover {
         color: lightgray;
     }
 `;
 
+
+
 function ReadToDo() {
-    const [toDoList, setToDoList] = useRecoilState(toDoState);
-    const [sortToDoList, setSortToDoList] = useState([]);   // 정렬된 toDoList
     const navigate = useNavigate();
+
+    const [toDoList, setToDoList] = useRecoilState(toDoState);  // 기존 toDoList
+    const [sortToDoList, setSortToDoList] = useState([]);   // 정렬된 toDoList
 
     const handleGoToAdd = () => navigate("/add");
     const handleGoToDel = () => navigate("/del");
 
     // 정렬 (미완료-완료, 최신순)
-    const sortToDo = (list) => {
-        return list.sort((x, y) => {
-        if (x.completed === y.completed) {
-                return new Date(y.crtnDt) - new Date(x.crtnDt);
-            } 
-            return x.completed ? 1 : -1;
-        });
+    const handleSortToDoList = (list) => {
+        return list.sort((a, b) => a.completed - b.completed || new Date(b.upDt) - new Date(a.upDt));
     };
 
     // 목록 변경 시 재정렬
     useEffect(() => {
-        setSortToDoList(sortToDo([...toDoList]));
+        setSortToDoList(handleSortToDoList([...toDoList]));
     }, [toDoList]);
 
     // 완료상태 변경
@@ -75,9 +69,20 @@ function ReadToDo() {
         const upToDo = sortToDoList.map(item => item.id === id ? {
             ...item,
             completed: !item.completed,
-            crtnDt: new Date(),
+            upDt: new Date(),
         } : item);
         setToDoList(upToDo);
+    }
+
+    // 필터링
+    const handleFilter = (selectedValue) => {
+        let filterList = toDoList.filter(
+            selectedValue === "active" ? (item) => !item.completed : 
+                selectedValue === "completed" ? (item) => item.completed : 
+                    () => true
+        );
+        
+        setSortToDoList(filterList);    // 필터링 된 값만 출력
     }
 
     return (
@@ -93,20 +98,27 @@ function ReadToDo() {
                 }
             />
 
-            <Ul>
-                {sortToDoList.map((item) => (
-                    <ListItem
-                        key={uuid4()}
-                        item={item}
-                        checked={false}
-                        mode="read"
-                        handleCompleted={handleCompleted}
-                        etcEle={<StyledLink to={`/modify/${item.id}`} isCompleted={item.completed}>
-                                    수정
-                                </StyledLink>}
-                    />
-                ))}
-            </Ul>
+            <ul className="todo-list">
+                <Filtering 
+                    mode="read" 
+                    handleFilter={handleFilter}
+                />
+
+                {sortToDoList.length === 0 ? 
+                    <div className="div-list-no-date">목록이 없습니다🫥</div> :
+                    sortToDoList.map((item) => (
+                        <ListItem
+                            key={uuid4()}
+                            item={item}
+                            checked={false}
+                            mode="read"
+                            handleCompleted={handleCompleted}
+                            etcEle={<StyledLink to={`/modify/${item.id}`} $isCompleted={item.completed}>
+                                        수정
+                                    </StyledLink>}
+                        />
+                    ))}
+            </ul>
         </>
     );
 }

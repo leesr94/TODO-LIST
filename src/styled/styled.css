@@ -64,12 +64,32 @@
 * {
     box-sizing: border-box;
     font-family: 'Pretendard';
-	color: #212121;
+	color: #424141;
 }
 
 body {
     margin: 0;
     padding: 0;
+}
+
+.div-list-no-date {
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: 0 0 0 -18%;
+    font-size: larger;
+    opacity: 0.5;
+}
+
+.todo-list {
+    padding: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 100px - 40px);
+    position: relative;
+}
+
+.todo-list-add-btn {
+	height: calc(100vh - 100px - 40px - 130px);
 }
 
 .btn {
@@ -92,4 +112,40 @@ body {
 
 .btn-del {
 	background-color: #e88e98;
+}
+
+.btn-del:disabled {
+	background-color: #cecece;
+	cursor: default;
+}
+
+.checkbox-label {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	cursor: pointer;
+}
+
+input[type='checkbox'] {
+	display: none;
+}
+
+.checkbox-icon::before {
+	content:'';
+	display: flex;
+	align-items: center;
+	margin-right: 9px;
+	width: 24px;
+	height: 24px;
+	background-color: transparent;
+	border: 1px solid #9da3a5;
+	border-radius: 100%;
+	box-sizing:border-box;
+	position: relative;
+}
+
+.checkbox-label input:checked + .checkbox-icon::before {
+	background: url(https://intranet.adef.co.kr/asset/images/ic_check.png) 
+		#9da3a5 no-repeat center;
+	border:none;
 }
