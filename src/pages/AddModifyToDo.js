@@ -66,7 +66,9 @@ function AddAndModifyToDo() {
 
     // 등록 (체크) 버튼 클릭
     const handleSave = () => {
-        if (newToDo.toDo === "") {
+        const todoTitle = newToDo.toDo.trim();  // 공백문자 제거
+
+        if (todoTitle === "") {
             return alert("할 일을 입력하세요.");
         }
 
@@ -74,7 +76,7 @@ function AddAndModifyToDo() {
             const upToDo = toDoList.map((item) => 
                 item.id === Number(id) ? {
                     ...item,
-                    toDo: newToDo.toDo,
+                    toDo: todoTitle,
                     memo: newToDo.memo,
                     upDt: new Date(),
                 } : item);
@@ -83,7 +85,7 @@ function AddAndModifyToDo() {
         } else {    // 신규추가의 경우
             const newToDoList = {
                 id: nextId,
-                toDo: newToDo.toDo,
+                toDo: todoTitle,
                 memo: newToDo.memo,
                 crtnDt: new Date(),
                 upDt: new Date(),
